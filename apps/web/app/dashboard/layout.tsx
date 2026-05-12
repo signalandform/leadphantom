@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation';
 
+import { DashboardMobileNav } from '@/components/dashboard/dashboard-mobile-nav';
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar';
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
+import { PocBanner } from '@/components/layout/poc-banner';
 import { isPocMode, POC_USER_ID } from '@/lib/config/app-mode';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
@@ -41,13 +43,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen bg-phantom-void">
       <DashboardSidebar pocMode={poc} />
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <PocBanner />
+        <DashboardMobileNav />
         <DashboardShell
           pocMode={poc}
           userId={userId}
           initiallyOnboarded={initiallyOnboarded}
         >
-          <main className="flex-1 p-6 md:p-10">{children}</main>
+          <main className="min-w-0 flex-1 p-4 sm:p-6 md:p-10">{children}</main>
         </DashboardShell>
       </div>
     </div>

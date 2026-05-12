@@ -105,8 +105,8 @@ export async function updateSearch(formData: FormData) {
   revalidatePath('/dashboard/searches');
 }
 
-export async function deleteSearch(formData: FormData) {
-  const id = String(formData.get('id') ?? '');
+export async function deleteSearch(searchId: string) {
+  const id = String(searchId ?? '').trim();
   if (!id) throw new Error('Missing id');
 
   if (isPocMode()) {

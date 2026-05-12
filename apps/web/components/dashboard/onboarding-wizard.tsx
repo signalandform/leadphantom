@@ -154,7 +154,7 @@ export function OnboardingWizard({ open, pocMode = false, userId, onCompleted }:
                 autoComplete="off"
                 value={googleApiKey}
                 onChange={(e) => setGoogleApiKey(e.target.value)}
-                placeholder="AIza..."
+                placeholder="AIza... (paste your key)"
               />
               <p className="text-xs text-muted-foreground">
                 Stored as plaintext in dev — replace with Vault/KMS encryption before production.
