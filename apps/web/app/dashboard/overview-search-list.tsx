@@ -2,11 +2,15 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 import { useTransition } from 'react';
 
 import { runSearchSync } from '@/app/dashboard/searches/actions';
 import { LeadCsvExportButton, LeadPreviewSheet } from '@/app/dashboard/searches/lead-preview-sheet';
 import { Button } from '@/components/ui/button';
+import { LocalDateTime } from '@/components/ui/local-datetime';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { toast } from '@/components/ui/toaster';
 import type { Database } from '@/lib/database.types';
 
 type SearchRow = {
@@ -69,31 +73,72 @@ function OverviewSearchRow({
 
   function runSync() {
     startTransition(async () => {
-      await runSearchSync(search.id);
-      onSyncComplete();
+      try {
+        await runSearchSync(search.id);
+        toast({
+          variant: 'success',
+          title: `Synced ${search.name}`,
+          description: 'Refreshing leads…',
+        });
+        onSyncComplete();
+      } catch (e) {
+        toast({
+          variant: 'error',
+          title: 'Sync failed',
+          description: e instanceof Error ? e.message : 'Try again in a moment.',
+        });
+      }
     });
   }
 
-  const metaBits = [
-    search.location_bias?.trim() || null,
-    search.radius_meters != null ? `${search.radius_meters}m` : null,
-    search.last_run_at ? `Last run ${new Date(search.last_run_at).toLocaleString()}` : null,
-  ].filter(Boolean);
+  const metaBits: React.ReactNode[] = [];
+  if (search.location_bias?.trim()) metaBits.push(search.location_bias.trim());
+  if (search.radius_meters != null) metaBits.push(`${search.radius_meters}m`);
+  if (search.last_run_at) {
+    metaBits.push(
+      <span key="last-run">
+        Last run <LocalDateTime value={search.last_run_at} />
+      </span>
+    );
+  }
+
+  const liveStatus = pending ? 'syncing' : search.status;
 
   return (
     <li className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-4">
       <div className="min-w-0 flex-1">
-        <div className="truncate font-medium text-white">{search.name}</div>
+        <div className="flex items-center gap-2">
+          <span className="truncate font-medium text-white">{search.name}</span>
+          <StatusBadge status={liveStatus} />
+        </div>
         <div className="truncate text-sm text-muted-foreground">{search.query_text}</div>
         {metaBits.length > 0 ? (
-          <div className="mt-1 truncate text-xs text-muted-foreground">{metaBits.join(' · ')}</div>
+          <div className="mt-1 flex flex-wrap items-center gap-x-1 truncate text-xs text-muted-foreground">
+            {metaBits.map((m, i) => (
+              <span key={i} className="contents">
+                {i > 0 ? <span className="mx-1">·</span> : null}
+                {m}
+              </span>
+            ))}
+          </div>
         ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
         <Button type="button" size="sm" variant="secondary" disabled={pending} onClick={() => void runSync()}>
-          {pending ? 'Sync…' : 'Sync'}
+          {pending ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> Syncing…
+            </span>
+          ) : (
+            'Sync'
+          )}
         </Button>
-        <LeadPreviewSheet searchName={search.name} locations={locations} triggerLabel="Preview" />
+        <LeadPreviewSheet
+          searchId={search.id}
+          searchName={search.name}
+          locations={locations}
+          triggerLabel="Preview"
+        />
         <LeadCsvExportButton searchName={search.name} locations={locations} />
       </div>
     </li>

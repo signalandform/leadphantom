@@ -63,7 +63,7 @@ export default async function SettingsPage() {
             type="password"
             autoComplete="off"
             defaultValue={googleKey}
-            placeholder="AIza..."
+            placeholder="AIza... (paste your key)"
           />
           <p className="text-xs text-muted-foreground">
             Production path mirrors into `api_credentials_lp` with provider `google_places`.

@@ -5,7 +5,7 @@ import { APP_NAME, APP_TAGLINE } from '@lead-phantom/shared';
 
 import './globals.css';
 
-import { PocBanner } from '@/components/layout/poc-banner';
+import { Toaster } from '@/components/ui/toaster';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
@@ -25,8 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${outfit.variable} ${jetbrains.variable}`}>
       <body className="min-h-screen font-sans">
-        <PocBanner />
         {children}
+        <Toaster />
       </body>
     </html>
   );

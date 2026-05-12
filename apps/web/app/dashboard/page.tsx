@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { OverviewSearchList } from '@/app/dashboard/overview-search-list';
+import { LocalDateTime } from '@/components/ui/local-datetime';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { isPocMode } from '@/lib/config/app-mode';
@@ -14,9 +15,11 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 type LocationRow = Database['public']['Tables']['lead_locations_lp']['Row'];
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 export default async function DashboardOverviewPage() {
   let placesCount: number;
-  let exportedRows: number;
+  let leadsAddedLast30Days: number;
   let lastSync: string | null;
   let searches: {
     id: string;
@@ -32,7 +35,7 @@ export default async function DashboardOverviewPage() {
   if (isPocMode()) {
     const s = pocOverviewStats();
     placesCount = s.placesCount;
-    exportedRows = s.exportedRows;
+    leadsAddedLast30Days = s.exportedRows;
     lastSync = s.lastSync;
     searches = pocListSearches();
     for (const x of searches) {
@@ -80,27 +83,32 @@ export default async function DashboardOverviewPage() {
             .in('search_id', searchIds)
             .order('ran_at', { ascending: false });
 
-    exportedRows = exports?.reduce((acc, row) => acc + (row.row_count ?? 0), 0) ?? 0;
+    const cutoff = Date.now() - THIRTY_DAYS_MS;
+    leadsAddedLast30Days =
+      exports?.reduce((acc, row) => {
+        const ranAt = new Date(row.ran_at).getTime();
+        return Number.isFinite(ranAt) && ranAt >= cutoff ? acc + (row.row_count ?? 0) : acc;
+      }, 0) ?? 0;
     lastSync = exports?.[0]?.ran_at ?? null;
   }
 
   const locationsRecord = Object.fromEntries(locationsBySearchId) as Record<string, LocationRow[]>;
 
-  const stats = [
+  const stats: { label: string; value: React.ReactNode; tooltip: string }[] = [
     {
-      label: 'Places monitored',
+      label: 'Total leads collected',
       value: placesCount,
-      hint: 'Rows in lead_locations_lp for your searches',
+      tooltip: 'Rows in lead_locations_lp for your searches.',
     },
     {
-      label: 'Rows from sync runs',
-      value: exportedRows,
-      hint: 'Sum of row_count per logged sync — CSV export is separate',
+      label: 'Leads added in the last 30 days',
+      value: leadsAddedLast30Days,
+      tooltip: 'Sum of row_count per sync run in the last 30 days.',
     },
     {
       label: 'Last sync',
-      value: lastSync ? new Date(lastSync).toLocaleString() : 'Never',
-      hint: 'Latest sync completion time (lead_exports_lp.ran_at)',
+      value: <LocalDateTime value={lastSync} fallback="Never" />,
+      tooltip: 'Latest sync completion time (lead_exports_lp.ran_at).',
     },
   ];
 
@@ -115,12 +123,21 @@ export default async function DashboardOverviewPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
         {stats.map((s) => (
           <Card key={s.label} className="border-white/10 bg-card/70">
             <CardHeader>
-              <CardTitle className="text-base text-primary">{s.label}</CardTitle>
-              <CardDescription>{s.hint}</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-base text-primary">
+                {s.label}
+                <span
+                  aria-label={s.tooltip}
+                  title={s.tooltip}
+                  className="inline-flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-white/20 text-[10px] text-muted-foreground"
+                >
+                  ?
+                </span>
+              </CardTitle>
+              <CardDescription className="sr-only">{s.tooltip}</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-semibold text-white">{s.value}</p>

@@ -43,19 +43,20 @@ export function DashboardSidebar({ pocMode = false }: { pocMode?: boolean }) {
           );
         })}
       </nav>
-      <p className="mt-8 text-xs text-muted-foreground">
+      <div className="mt-8 space-y-2 text-xs text-muted-foreground">
         {pocMode ? (
-          <>
-            POC: in-memory mock store. Set <span className="font-mono text-primary">NEXT_PUBLIC_POC_MODE=false</span> for
-            Supabase + APIs.
-          </>
+          <p>
+            POC mode: in-memory mock store. Set{' '}
+            <span className="font-mono text-primary">NEXT_PUBLIC_POC_MODE=false</span> to use
+            Supabase + APIs (see README).
+          </p>
         ) : (
-          <>
+          <p>
             Background sync jobs run via route handlers for now.{' '}
             <span className="text-primary/80">TODO:</span> queue worker.
-          </>
+          </p>
         )}
-      </p>
+      </div>
     </aside>
   );
 }
