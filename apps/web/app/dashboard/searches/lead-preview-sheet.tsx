@@ -32,7 +32,7 @@ function rowToInsert(row: LocationRow): LeadLocationInsert {
   };
 }
 
-function slugifyFilename(name: string): string {
+export function slugifyLeadsFilename(name: string): string {
   const s = name
     .trim()
     .toLowerCase()
@@ -41,12 +41,48 @@ function slugifyFilename(name: string): string {
   return s || 'leads';
 }
 
-export function LeadPreviewSheet({
+/** Immediate CSV download using current row snapshot (no sheet UI). */
+export function LeadCsvExportButton({
   searchName,
   locations,
+  size = 'sm',
 }: {
   searchName: string;
   locations: LocationRow[];
+  size?: 'sm' | 'default';
+}) {
+  function downloadCsv() {
+    const csv = buildLeadsCsv(locations.map(rowToInsert));
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${slugifyLeadsFilename(searchName)}-leads.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size={size}
+      disabled={locations.length === 0}
+      onClick={downloadCsv}
+    >
+      Export
+    </Button>
+  );
+}
+
+export function LeadPreviewSheet({
+  searchName,
+  locations,
+  triggerLabel = 'Preview',
+}: {
+  searchName: string;
+  locations: LocationRow[];
+  triggerLabel?: string;
 }) {
   const csv = useMemo(() => buildLeadsCsv(locations.map(rowToInsert)), [locations]);
 
@@ -55,7 +91,7 @@ export function LeadPreviewSheet({
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `${slugifyFilename(searchName)}-leads.csv`;
+    anchor.download = `${slugifyLeadsFilename(searchName)}-leads.csv`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -64,7 +100,7 @@ export function LeadPreviewSheet({
     <Sheet>
       <SheetTrigger asChild>
         <Button type="button" variant="outline" size="sm">
-          Preview &amp; CSV
+          {triggerLabel}
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="flex h-full max-h-screen w-full flex-col gap-4 overflow-hidden sm:max-w-[min(96vw,72rem)]">

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import type { Database } from '@/lib/database.types';
 
 import { createSearch, deleteSearch, runSearchSync, updateSearch } from './actions';
-import { LeadPreviewSheet } from './lead-preview-sheet';
+import { LeadCsvExportButton, LeadPreviewSheet } from './lead-preview-sheet';
 
 type SearchRow = {
   id: string;
@@ -114,10 +114,11 @@ export function SearchCard({
           <Button type="submit" variant="secondary" disabled={pending}>
             Save
           </Button>
-          <LeadPreviewSheet searchName={search.name} locations={locations} />
           <Button type="button" variant="outline" disabled={pending} onClick={() => void runSearch()}>
-            Run sync (stub)
+            Sync
           </Button>
+          <LeadPreviewSheet searchName={search.name} locations={locations} />
+          <LeadCsvExportButton searchName={search.name} locations={locations} />
         </div>
       </form>
       <form
