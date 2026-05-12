@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { APP_NAME, APP_TAGLINE } from '@lead-phantom/shared';
 
 import { MarketingNav } from '@/components/marketing/marketing-nav';
-import { isPocMode } from '@/lib/config/app-mode';
+import { WaitlistDialog } from '@/components/marketing/waitlist-dialog';
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { isPocMode } from '@/lib/config/app-mode';
 
 const faqs = [
   {
@@ -32,6 +33,38 @@ const faqs = [
   },
 ];
 
+const tiers = [
+  {
+    name: 'Starter',
+    featured: false,
+    bullets: [
+      'A few active searches',
+      'Hosted Maps / Places lookups included monthly',
+      'In-app preview + CSV export',
+      'Email support',
+    ],
+  },
+  {
+    name: 'Growth',
+    featured: true,
+    bullets: [
+      'More active searches',
+      'Higher hosted Maps / Places quota',
+      'Higher sync priority (TODO)',
+      'Priority support',
+    ],
+  },
+  {
+    name: 'Phantom',
+    featured: false,
+    bullets: [
+      'Custom hosted-query pools & regions',
+      'Dedicated rate limits (TODO)',
+      'Security review + SLA drafting',
+    ],
+  },
+];
+
 export default function HomePage() {
   const startHref = isPocMode() ? '/dashboard' : '/signup';
   return (
@@ -40,7 +73,7 @@ export default function HomePage() {
       <main className="flex-1">
         <section className="relative overflow-hidden border-b border-white/10">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-fuchsia-500/10" />
-          <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-24 md:flex-row md:items-center md:py-28">
+          <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-20 md:flex-row md:items-center md:py-28">
             <div className="flex-1 space-y-6">
               <p className="inline-flex rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary">
                 Hosted Maps queries · metered plans
@@ -52,6 +85,9 @@ export default function HomePage() {
                 </span>
               </h1>
               <p className="max-w-xl text-lg text-muted-foreground">{APP_TAGLINE}</p>
+              <p className="max-w-xl text-sm text-primary/90">
+                Built for agencies and SDR teams doing local-business outreach.
+              </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" asChild>
                   <Link href={startHref}>Get started</Link>
@@ -127,67 +163,24 @@ export default function HomePage() {
           <div className="mx-auto max-w-6xl px-4 py-20">
             <h2 className="mb-4 text-3xl font-semibold text-white">Pricing</h2>
             <p className="mb-6 max-w-2xl text-muted-foreground">
-              All figures are placeholders — ship metering + Stripe before quoting customers. You sell hosted Maps query
-              capacity; keys never ship to the browser.
+              Billing isn’t wired yet — join a waitlist on the plan that fits and we’ll email you when it opens.
             </p>
             <div className="grid gap-6 md:grid-cols-3">
-              {(
-                [
-                  {
-                    name: 'Starter',
-                    price: '$XX.XX',
-                    perMonth: true,
-                    bullets: [
-                      'Up to X active searches',
-                      'X,XXX hosted Maps / Places lookups / mo (quota TBD)',
-                      'In-app preview + CSV export',
-                      'Email support',
-                    ],
-                  },
-                  {
-                    name: 'Growth',
-                    price: '$XX.XX',
-                    perMonth: true,
-                    featured: true,
-                    bullets: [
-                      'Up to X active searches',
-                      'XX,XXX hosted Maps / Places lookups / mo (quota TBD)',
-                      'Higher sync priority (TODO)',
-                      'Priority support',
-                    ],
-                  },
-                  {
-                    name: 'Phantom',
-                    price: 'Custom',
-                    priceSubtext: 'Volume floors from $XX.XX / mo (placeholder)',
-                    bullets: [
-                      'Custom hosted-query pools & regions',
-                      'Dedicated rate limits (TODO)',
-                      'Security review + SLA drafting',
-                    ],
-                  },
-                ] as const
-              ).map((tier) => (
+              {tiers.map((tier) => (
                 <Card
                   key={tier.name}
                   className={
-                    'featured' in tier && tier.featured
+                    tier.featured
                       ? 'border-primary shadow-neon'
                       : 'border-white/10 bg-background/40'
                   }
                 >
                   <CardHeader>
                     <CardTitle>{tier.name}</CardTitle>
-                    <CardDescription className="space-y-1 text-3xl font-semibold text-white">
-                      <div>
-                        {tier.price}
-                        {'perMonth' in tier && tier.perMonth ? (
-                          <span className="text-base font-normal text-muted-foreground"> / mo</span>
-                        ) : null}
-                      </div>
-                      {'priceSubtext' in tier && tier.priceSubtext ? (
-                        <p className="text-sm font-normal text-muted-foreground">{tier.priceSubtext}</p>
-                      ) : null}
+                    <CardDescription className="space-y-2">
+                      <span className="inline-flex rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-primary">
+                        Pricing — coming soon
+                      </span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -196,13 +189,11 @@ export default function HomePage() {
                         <li key={b}>• {b}</li>
                       ))}
                     </ul>
-                    <Button
-                      className="mt-6 w-full"
-                      variant={'featured' in tier && tier.featured ? 'default' : 'outline'}
-                      asChild
-                    >
-                      <Link href={startHref}>Choose {tier.name}</Link>
-                    </Button>
+                    <WaitlistDialog
+                      triggerLabel={`Join ${tier.name} waitlist`}
+                      tierName={tier.name}
+                      featured={tier.featured}
+                    />
                   </CardContent>
                 </Card>
               ))}
@@ -236,10 +227,28 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <footer className="border-t border-white/10 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {APP_NAME}. Pricing shown as $XX.XX placeholders — connect billing + usage meters
-        before launch.
-      </footer>
+      <SiteFooter />
     </div>
+  );
+}
+
+function SiteFooter() {
+  return (
+    <footer className="border-t border-white/10 py-8 text-xs text-muted-foreground">
+      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 sm:flex-row sm:items-center">
+        <p>© {new Date().getFullYear()} {APP_NAME}.</p>
+        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2" aria-label="Legal">
+          <Link href="/privacy" className="hover:text-primary">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-primary">
+            Terms
+          </Link>
+          <a href="mailto:hello@leadphantom.app" className="hover:text-primary">
+            hello@leadphantom.app
+          </a>
+        </nav>
+      </div>
+    </footer>
   );
 }
