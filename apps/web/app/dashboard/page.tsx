@@ -93,7 +93,7 @@ export default async function DashboardOverviewPage() {
         <p className="text-muted-foreground">
           {isPocMode()
             ? 'POC mode: mock data resets when the dev server restarts.'
-            : 'Manage sync, preview, and CSV export per search. Edit saved searches on the Searches tab.'}
+            : 'Production runs hosted Maps-style lookups on Lead Phantom infrastructure — subscription & usage metering TODO. Manage sync, preview, and CSV export here; edit saved searches on the Searches tab.'}
         </p>
       </div>
 

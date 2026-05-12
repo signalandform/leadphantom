@@ -15,16 +15,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const faqs = [
   {
-    q: 'Do I need a Google Cloud billing account?',
-    a: 'You will need Places API access for production traffic. This scaffold ships with stubs so you can demo UI flows without billing enabled.',
+    q: 'Do I need my own Google Cloud billing account?',
+    a: 'No — core Maps discovery runs on Lead Phantom’s pooled infrastructure and API keys. You pay us for included query quota per plan; optional BYOK may appear later for power users.',
+  },
+  {
+    q: 'How are Maps queries billed?',
+    a: 'Subscriptions bundle a monthly allotment of hosted Places-style lookups executed on our side. Overages and metering UI are TODO — wire Stripe (or similar) + usage counters before charging customers.',
   },
   {
     q: 'How often does Lead Phantom sync?',
-    a: 'Right now sync is manual via the dashboard / API. TODO: add scheduled queue workers with retries and rate limiting.',
+    a: 'Right now sync is manual via the dashboard / API. TODO: add scheduled queue workers with retries and rate limits aligned to paid quotas.',
   },
   {
-    q: 'Is my spreadsheet data secure?',
-    a: 'Exports should use least-privilege OAuth or service accounts. TODO: wire dedicated credentials and audit logs.',
+    q: 'Where do my leads go?',
+    a: 'Rows stay in your workspace; preview and CSV export are in the dashboard. Optional push integrations (e.g. Sheets) should keep least-privilege credentials and audit logs.',
   },
 ];
 
@@ -39,7 +43,7 @@ export default function HomePage() {
           <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-24 md:flex-row md:items-center md:py-28">
             <div className="flex-1 space-y-6">
               <p className="inline-flex rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary">
-                Phantom-grade Maps intel
+                Hosted Maps queries · metered plans
               </p>
               <h1 className="text-4xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
                 Haunt Google Maps for{' '}
@@ -59,16 +63,16 @@ export default function HomePage() {
             </div>
             <Card className="flex-1 border-primary/30 shadow-neon">
               <CardHeader>
-                <CardTitle className="text-primary">Live phantom pulse</CardTitle>
+                <CardTitle className="text-primary">Hosted query pulse</CardTitle>
                 <CardDescription>
-                  Neon telemetry preview — wire your Supabase project to see real counts.
+                  Illustrative counters — production ties Places requests to subscription quota and our API keys.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-3">
                 {[
-                  { label: 'Places monitored', value: '128', hint: 'demo stat' },
-                  { label: 'Leads exported', value: '960', hint: 'last 30d' },
-                  { label: 'Sync latency', value: '< 5m', hint: 'TODO queue SLA' },
+                  { label: 'Places monitored', value: 'XXX', hint: 'demo stat' },
+                  { label: 'Maps runs (30d)', value: 'X,XXX', hint: 'hosted on LP infra' },
+                  { label: 'Sync latency', value: '< Xm', hint: 'TODO queue SLA' },
                 ].map((item) => (
                   <div
                     key={item.label}
@@ -90,23 +94,23 @@ export default function HomePage() {
           <div className="mb-12 max-w-2xl space-y-3">
             <h2 className="text-3xl font-semibold text-white">How it works</h2>
             <p className="text-muted-foreground">
-              Define geo searches, let Places stubs (later: live API) populate structured rows,
-              then pipe everything into your spreadsheet.
+              Define geo searches; Lead Phantom executes Places-style lookups on our servers and pooled Maps keys under
+              your plan quota, normalizes results, and stores structured leads for preview and CSV export.
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {[
               {
                 title: '1 · Configure searches',
-                body: 'Save named queries with radius + location bias — CRUD lives in Supabase.',
+                body: 'Save named queries with radius + location bias — CRUD lives in Supabase when POC mode is off.',
               },
               {
-                title: '2 · Harvest Places',
-                body: 'Route handlers call Google service stubs, normalize payloads, upsert leads.',
+                title: '2 · Hosted Maps harvest',
+                body: 'Paid tiers consume quota against Lead Phantom–managed Places requests (stubs today; production keys stay server-side).',
               },
               {
-                title: '3 · Export quietly',
-                body: 'Append rows to Sheets with audited exports logged per run.',
+                title: '3 · Own your rows',
+                body: 'Review leads in-app, export CSV, and audit sync runs — no surprise pushes to your spreadsheet.',
               },
             ].map((step) => (
               <Card key={step.title} className="border-white/10 bg-card/60">
@@ -121,40 +125,68 @@ export default function HomePage() {
 
         <section id="pricing" className="border-y border-white/10 bg-gradient-to-b from-transparent to-phantom-mist/40">
           <div className="mx-auto max-w-6xl px-4 py-20">
-            <h2 className="mb-10 text-3xl font-semibold text-white">Pricing</h2>
+            <h2 className="mb-4 text-3xl font-semibold text-white">Pricing</h2>
+            <p className="mb-6 max-w-2xl text-muted-foreground">
+              All figures are placeholders — ship metering + Stripe before quoting customers. You sell hosted Maps query
+              capacity; keys never ship to the browser.
+            </p>
             <div className="grid gap-6 md:grid-cols-3">
-              {[
-                {
-                  name: 'Starter',
-                  price: '$49',
-                  bullets: ['5 active searches', '2k exports / mo', 'Email support'],
-                },
-                {
-                  name: 'Growth',
-                  price: '$149',
-                  featured: true,
-                  bullets: ['25 searches', '25k exports', 'Priority sync TODO'],
-                },
-                {
-                  name: 'Phantom',
-                  price: 'Talk to us',
-                  bullets: ['Custom queues', 'Dedicated regions', 'SLA drafting'],
-                },
-              ].map((tier) => (
+              {(
+                [
+                  {
+                    name: 'Starter',
+                    price: '$XX.XX',
+                    perMonth: true,
+                    bullets: [
+                      'Up to X active searches',
+                      'X,XXX hosted Maps / Places lookups / mo (quota TBD)',
+                      'In-app preview + CSV export',
+                      'Email support',
+                    ],
+                  },
+                  {
+                    name: 'Growth',
+                    price: '$XX.XX',
+                    perMonth: true,
+                    featured: true,
+                    bullets: [
+                      'Up to X active searches',
+                      'XX,XXX hosted Maps / Places lookups / mo (quota TBD)',
+                      'Higher sync priority (TODO)',
+                      'Priority support',
+                    ],
+                  },
+                  {
+                    name: 'Phantom',
+                    price: 'Custom',
+                    priceSubtext: 'Volume floors from $XX.XX / mo (placeholder)',
+                    bullets: [
+                      'Custom hosted-query pools & regions',
+                      'Dedicated rate limits (TODO)',
+                      'Security review + SLA drafting',
+                    ],
+                  },
+                ] as const
+              ).map((tier) => (
                 <Card
                   key={tier.name}
                   className={
-                    tier.featured
+                    'featured' in tier && tier.featured
                       ? 'border-primary shadow-neon'
                       : 'border-white/10 bg-background/40'
                   }
                 >
                   <CardHeader>
                     <CardTitle>{tier.name}</CardTitle>
-                    <CardDescription className="text-3xl font-semibold text-white">
-                      {tier.price}
-                      {tier.price.startsWith('$') ? (
-                        <span className="text-base font-normal text-muted-foreground"> / mo</span>
+                    <CardDescription className="space-y-1 text-3xl font-semibold text-white">
+                      <div>
+                        {tier.price}
+                        {'perMonth' in tier && tier.perMonth ? (
+                          <span className="text-base font-normal text-muted-foreground"> / mo</span>
+                        ) : null}
+                      </div>
+                      {'priceSubtext' in tier && tier.priceSubtext ? (
+                        <p className="text-sm font-normal text-muted-foreground">{tier.priceSubtext}</p>
                       ) : null}
                     </CardDescription>
                   </CardHeader>
@@ -166,7 +198,7 @@ export default function HomePage() {
                     </ul>
                     <Button
                       className="mt-6 w-full"
-                      variant={tier.featured ? 'default' : 'outline'}
+                      variant={'featured' in tier && tier.featured ? 'default' : 'outline'}
                       asChild
                     >
                       <Link href={startHref}>Choose {tier.name}</Link>
@@ -194,7 +226,9 @@ export default function HomePage() {
           <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 md:flex-row md:items-center">
             <div>
               <h3 className="text-2xl font-semibold text-white">Ready to glide through Maps?</h3>
-              <p className="text-muted-foreground">Spin up Supabase locally and invite your team.</p>
+              <p className="text-muted-foreground">
+                Subscribe for hosted Maps discovery quota, then invite your team — billing gates live requests.
+              </p>
             </div>
             <Button size="lg" asChild>
               <Link href={startHref}>Create your workspace</Link>
@@ -203,7 +237,8 @@ export default function HomePage() {
         </section>
       </main>
       <footer className="border-t border-white/10 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {APP_NAME}. Demo scaffolding — replace pricing before launch.
+        © {new Date().getFullYear()} {APP_NAME}. Pricing shown as $XX.XX placeholders — connect billing + usage meters
+        before launch.
       </footer>
     </div>
   );

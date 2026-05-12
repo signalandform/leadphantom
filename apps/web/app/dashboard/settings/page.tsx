@@ -56,7 +56,7 @@ export default async function SettingsPage() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="google_api_key">Google API key</Label>
+          <Label htmlFor="google_api_key">Google API key (optional BYOK — default is LP-hosted Maps quota)</Label>
           <Input
             id="google_api_key"
             name="google_api_key"

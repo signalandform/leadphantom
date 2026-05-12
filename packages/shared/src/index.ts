@@ -1,3 +1,5 @@
 export const APP_NAME = 'Lead Phantom';
 
-export const APP_TAGLINE = 'Google Maps lead intelligence → your spreadsheet';
+/** Short meta / OG description — hosted Maps queries are a billed product surface. */
+export const APP_TAGLINE =
+  'Hosted Google Maps lead discovery on our infrastructure — you subscribe, we run the Places queries, you keep the leads.';

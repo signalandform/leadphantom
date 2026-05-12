@@ -1,6 +1,8 @@
 # Lead Phantom
 
-Monorepo for **Lead Phantom**, a demo-ready SaaS scaffold that monitors Google Maps-style lead data and syncs exports toward Google Sheets.
+Monorepo for **Lead Phantom**, a SaaS-shaped product for **hosted Google Maps (Places-style) lead discovery**: customers **pay Lead Phantom** to run searches on **our machines and API keys**, with quotas metered per subscription tier (billing integrations are still TODO in this scaffold).
+
+Exports and previews are **in-product** (CSV, dashboard tables); optional Google Sheets or BYOK paths can be layered on later.
 
 ## Structure
 
@@ -97,7 +99,8 @@ Magic link (`/signup`) is used when POC mode is off; SMTP must be configured for
 
 ## Security notes / TODOs
 
-- **Secrets**: `profiles_lp.google_api_key` and `api_credentials_lp.encrypted_key` are plaintext placeholders. Swap for Supabase Vault, KMS, or envelope encryption before production.
+- **Billing**: Wire Stripe (or similar) for subscriptions + usage meters aligned with Places query counts before selling hosted Maps runs.
+- **Secrets**: Platform-managed Maps keys live in server-side secrets only — never expose customer-facing copies in the browser. `profiles_lp.google_api_key` / `api_credentials_lp.encrypted_key` exist for optional BYOK experiments; treat as legacy demo unless you implement a secure BYOK flow.
 - **Sheets**: `sheetsAppendRows` is a stub — add OAuth/service account flows and parse spreadsheet IDs from URLs.
 - **Queues**: `/api/searches/run` is synchronous (disabled in POC); migrate orchestration to a durable worker with retries.
 

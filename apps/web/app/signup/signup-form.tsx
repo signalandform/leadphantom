@@ -73,8 +73,8 @@ export function SignupForm() {
             <CardHeader>
               <CardTitle className="text-2xl text-white">Sign in with magic link</CardTitle>
               <CardDescription>
-                Passwordless auth powered by Supabase — production installs should configure SMTP /
-                custom domains.
+                Passwordless auth powered by Supabase. Production should attach Stripe (or similar) so Maps sync jobs
+                respect paid quota — see README billing notes.
               </CardDescription>
             </CardHeader>
             <CardContent>

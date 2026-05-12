@@ -1,5 +1,6 @@
 /**
- * Typed shapes for Google Places (Text Search / Details) and Sheets integration.
+ * Typed shapes for Google Places (Text Search / Details). Production traffic is expected to run on
+ * Lead Phantom–managed credentials (customer pays subscription / usage); BYOK remains an optional path.
  * TODO: Replace stub implementations with real HTTP calls + error handling / retries.
  */
 
