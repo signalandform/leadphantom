@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSheetRows,
+  LEAD_SHEET_COLUMN_HEADERS,
   normalizePlaceDetails,
   type LeadLocationInsert,
 } from './google';
@@ -65,6 +66,7 @@ describe('buildSheetRows', () => {
 
     const rows = buildSheetRows(locs);
     expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveLength(LEAD_SHEET_COLUMN_HEADERS.length);
     expect(rows[0]).toEqual([
       'p1',
       'A',

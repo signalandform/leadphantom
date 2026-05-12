@@ -61,14 +61,14 @@ export default async function DashboardOverviewPage() {
       hint: 'Rows in lead_locations_lp for your searches',
     },
     {
-      label: 'Leads exported',
+      label: 'Rows from sync runs',
       value: exportedRows,
-      hint: 'Sum of row_count across exports',
+      hint: 'Sum of row_count per logged sync — CSV export is separate',
     },
     {
       label: 'Last sync',
       value: lastSync ? new Date(lastSync).toLocaleString() : 'Never',
-      hint: 'Latest lead_exports_lp.ran_at',
+      hint: 'Latest sync completion time (lead_exports_lp.ran_at)',
     },
   ];
 

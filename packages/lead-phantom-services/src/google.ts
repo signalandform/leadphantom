@@ -61,9 +61,21 @@ export function normalizePlaceDetails(
 
 export type SheetRow = string[];
 
+/** Header labels aligned with each column produced by `buildSheetRows` (CSV / Sheets). */
+export const LEAD_SHEET_COLUMN_HEADERS = [
+  'place_id',
+  'name',
+  'address',
+  'phone',
+  'website',
+  'rating',
+  'last_seen_at',
+] as const;
+
 /**
  * Builds tabular rows for Google Sheets append requests.
- * TODO: Include headers row option, locale-specific formatting, batch limits.
+ * Column order matches `LEAD_SHEET_COLUMN_HEADERS`.
+ * TODO: Locale-specific formatting, batch limits.
  */
 export function buildSheetRows(locations: LeadLocationInsert[]): SheetRow[] {
   return locations.map((loc) => [

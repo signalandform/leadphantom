@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import type { Database } from '@/lib/database.types';
+
 import { createSearch, deleteSearch, runSearchSync, updateSearch } from './actions';
+import { LeadPreviewSheet } from './lead-preview-sheet';
 
 type SearchRow = {
   id: string;
@@ -18,6 +21,8 @@ type SearchRow = {
   status: string;
   last_run_at: string | null;
 };
+
+type LocationRow = Database['public']['Tables']['lead_locations_lp']['Row'];
 
 export function CreateSearchForm() {
   const [pending, startTransition] = useTransition();
@@ -56,7 +61,13 @@ export function CreateSearchForm() {
   );
 }
 
-export function SearchCard({ search }: { search: SearchRow }) {
+export function SearchCard({
+  search,
+  locations,
+}: {
+  search: SearchRow;
+  locations: LocationRow[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -103,6 +114,7 @@ export function SearchCard({ search }: { search: SearchRow }) {
           <Button type="submit" variant="secondary" disabled={pending}>
             Save
           </Button>
+          <LeadPreviewSheet searchName={search.name} locations={locations} />
           <Button type="button" variant="outline" disabled={pending} onClick={() => void runSearch()}>
             Run sync (stub)
           </Button>

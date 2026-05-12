@@ -98,7 +98,7 @@ export function OnboardingWizard({ open, pocMode = false, userId, onCompleted }:
         <DialogHeader>
           <DialogTitle>Welcome to Lead Phantom</DialogTitle>
           <DialogDescription>
-            Step {step} of 3 — tell us how you want exports to flow.
+            Step {step} of 3 — profile and optional integrations.
             {pocMode ? ' (Saved to mock store only.)' : null}
           </DialogDescription>
         </DialogHeader>
@@ -129,7 +129,7 @@ export function OnboardingWizard({ open, pocMode = false, userId, onCompleted }:
         {step === 2 && (
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="sheet">Preferred Google Sheet URL</Label>
+              <Label htmlFor="sheet">Google Sheet URL (optional)</Label>
               <Input
                 id="sheet"
                 value={sheetUrl}
@@ -137,7 +137,8 @@ export function OnboardingWizard({ open, pocMode = false, userId, onCompleted }:
                 placeholder="https://docs.google.com/spreadsheets/d/..."
               />
               <p className="text-xs text-muted-foreground">
-                TODO: OAuth / service account wiring for Sheets — URL is stored for demo routing.
+                Lead Phantom does not auto-push to Sheets — preview and CSV export happen in the dashboard. This URL is
+                stored for future integrations only.
               </p>
             </div>
           </div>

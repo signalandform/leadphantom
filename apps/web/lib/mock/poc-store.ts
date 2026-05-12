@@ -1,11 +1,7 @@
-import {
-  buildSheetRows,
-  sheetsAppendRows,
-} from '@lead-phantom/services';
-
 import type { Database } from '@/lib/database.types';
 
 import { POC_USER_ID } from '@/lib/config/app-mode';
+import { IN_APP_EXPORT_DESTINATION } from '@/lib/export-constants';
 import { buildStubLeadRowsForSearch } from '@/lib/search/stub-pipeline';
 
 type ProfileRow = Database['public']['Tables']['profiles_lp']['Row'];
@@ -34,7 +30,7 @@ function initialStore(): Store {
       id: POC_USER_ID,
       company_name: 'Phantom Demo Co.',
       industry: 'Home services',
-      sheet_url: 'https://docs.google.com/spreadsheets/d/demo-sheet-id/edit',
+      sheet_url: null,
       google_api_key: null,
       onboarded: false,
       created_at: t,
@@ -108,7 +104,7 @@ function initialStore(): Store {
       {
         id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1',
         search_id: SEARCH_DALLAS,
-        sheet_url: 'https://docs.google.com/spreadsheets/d/demo-sheet-id/edit',
+        sheet_url: IN_APP_EXPORT_DESTINATION,
         row_count: 2,
         status: 'completed',
         ran_at: new Date(Date.now() - 43200000).toISOString(),
@@ -117,7 +113,7 @@ function initialStore(): Store {
       {
         id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2',
         search_id: SEARCH_AUSTIN,
-        sheet_url: 'https://docs.google.com/spreadsheets/d/demo-sheet-id/edit',
+        sheet_url: IN_APP_EXPORT_DESTINATION,
         row_count: 1,
         status: 'completed',
         ran_at: new Date(Date.now() - 108000000).toISOString(),
@@ -224,6 +220,10 @@ export function pocDeleteSearch(id: string): void {
   s.exports = s.exports.filter((e) => e.search_id !== id);
 }
 
+export function pocListLocationsForSearch(searchId: string): LocationRow[] {
+  return getStore().locations.filter((l) => l.search_id === searchId);
+}
+
 export function pocListExports(): ExportRow[] {
   const ids = new Set(getStore().searches.filter((x) => x.user_id === POC_USER_ID).map((x) => x.id));
   return getStore()
@@ -285,24 +285,15 @@ export async function pocRunSearchSync(searchId: string): Promise<void> {
     else s.locations.push(row);
   }
 
-  const sheetRows = buildSheetRows(inserts);
-  const sheetTarget =
-    s.profile.sheet_url ??
-    'https://docs.google.com/spreadsheets/d/demo-placeholder/edit';
-  const sheetsResult = await sheetsAppendRows({
-    spreadsheetIdOrUrl: sheetTarget,
-    rows: sheetRows,
-  });
-
   const ranAt = nowIso();
   s.exports.push({
     id: crypto.randomUUID(),
     search_id: search.id,
-    sheet_url: sheetTarget,
+    sheet_url: IN_APP_EXPORT_DESTINATION,
     row_count: inserts.length,
     status: 'completed',
     ran_at: ranAt,
-    payload: { appended: sheetsResult.appended, stub: true, poc: true },
+    payload: { stub: true, poc: true, destination: 'in_app_preview' },
   });
 
   search.last_run_at = ranAt;

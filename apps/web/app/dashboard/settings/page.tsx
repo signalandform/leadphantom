@@ -39,7 +39,7 @@ export default async function SettingsPage() {
         <p className="text-muted-foreground">
           {isPocMode()
             ? 'Updates apply to the mock profile only. Flip POC mode off to persist to Supabase.'
-            : 'Targets sync to your spreadsheet URL and optional Places key. Secrets are plaintext in dev — replace with Vault/KMS before production.'}
+            : 'Sync stores leads in Lead Phantom; CSV export is manual from each search. Optional fields below are reserved for future Places / Sheets integrations — nothing is pushed to Sheets automatically today.'}
         </p>
       </div>
       <form
@@ -47,7 +47,7 @@ export default async function SettingsPage() {
         className="space-y-6 rounded-xl border border-white/10 bg-card/60 p-6"
       >
         <div className="space-y-2">
-          <Label htmlFor="sheet_url">Google Sheet URL</Label>
+          <Label htmlFor="sheet_url">Google Sheet URL (optional — not used for auto-export)</Label>
           <Input
             id="sheet_url"
             name="sheet_url"

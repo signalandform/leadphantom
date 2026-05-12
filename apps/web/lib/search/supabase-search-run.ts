@@ -1,22 +1,18 @@
-import {
-  buildSheetRows,
-  sheetsAppendRows,
-} from '@lead-phantom/services';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 import type { Database } from '@/lib/database.types';
 
+import { IN_APP_EXPORT_DESTINATION } from '@/lib/export-constants';
 import { buildStubLeadRowsForSearch } from '@/lib/search/stub-pipeline';
 
 export type SupabaseSearchRunResult = {
   searchId: string;
   placesMatched: number;
   rowsUpserted: number;
-  sheets: { appended: number };
 };
 
 /**
- * Production path: persists stub Places results to Supabase + logs export.
+ * Production path: persists stub Places results to Supabase + logs a run (no Google Sheets push).
  * TODO: Queue worker — keep in sync with any API route changes.
  */
 export async function executeSupabaseSearchRun(
@@ -33,12 +29,6 @@ export async function executeSupabaseSearchRun(
   if (searchError || !search || search.user_id !== userId) {
     throw new Error('Search not found');
   }
-
-  const { data: profile } = await supabase
-    .from('profiles_lp')
-    .select('sheet_url')
-    .eq('id', userId)
-    .maybeSingle();
 
   await supabase.from('lead_searches_lp').update({ status: 'running' }).eq('id', search.id);
 
@@ -59,21 +49,12 @@ export async function executeSupabaseSearchRun(
     }
   }
 
-  const sheetRows = buildSheetRows(rows);
-  const sheetTarget =
-    profile?.sheet_url ??
-    'https://docs.google.com/spreadsheets/d/demo-placeholder/edit'; /* TODO: require configured sheet */
-  const sheetsResult = await sheetsAppendRows({
-    spreadsheetIdOrUrl: sheetTarget,
-    rows: sheetRows,
-  });
-
   await supabase.from('lead_exports_lp').insert({
     search_id: search.id,
-    sheet_url: sheetTarget,
+    sheet_url: IN_APP_EXPORT_DESTINATION,
     row_count: rows.length,
     status: 'completed',
-    payload: { appended: sheetsResult.appended, stub: true },
+    payload: { stub: true, destination: 'in_app_preview' },
   });
 
   const now = new Date().toISOString();
@@ -86,6 +67,5 @@ export async function executeSupabaseSearchRun(
     searchId: search.id,
     placesMatched: rows.length,
     rowsUpserted: rows.length,
-    sheets: sheetsResult,
   };
 }

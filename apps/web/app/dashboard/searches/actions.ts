@@ -125,7 +125,7 @@ export async function deleteSearch(formData: FormData) {
   revalidatePath('/dashboard/searches');
 }
 
-/** Runs stub Places → sheet pipeline (mock store in POC; Supabase when live). */
+/** Runs stub Places pipeline into DB / mock store (no automatic Google Sheets push). */
 export async function runSearchSync(searchId: string) {
   if (isPocMode()) {
     await pocRunSearchSync(searchId);
