@@ -86,6 +86,24 @@ export default async function DashboardOverviewPage() {
 
   const locationsRecord = Object.fromEntries(locationsBySearchId) as Record<string, LocationRow[]>;
 
+  const stats = [
+    {
+      label: 'Places monitored',
+      value: placesCount,
+      hint: 'Rows in lead_locations_lp for your searches',
+    },
+    {
+      label: 'Rows from sync runs',
+      value: exportedRows,
+      hint: 'Sum of row_count per logged sync — CSV export is separate',
+    },
+    {
+      label: 'Last sync',
+      value: lastSync ? new Date(lastSync).toLocaleString() : 'Never',
+      hint: 'Latest sync completion time (lead_exports_lp.ran_at)',
+    },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
@@ -98,27 +116,34 @@ export default async function DashboardOverviewPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="border-white/10 bg-card/70 md:col-span-3">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base text-primary">Workspace snapshot</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              <span>{placesCount} places stored</span>
-              {' · '}
-              <span>{exportedRows} rows logged across sync runs</span>
-              {' · '}
-              <span>
-                Last sync {lastSync ? new Date(lastSync).toLocaleString() : 'never'} ·{' '}
-                <Link href="/dashboard/searches" className="text-primary underline-offset-4 hover:underline">
-                  Manage searches
-                </Link>
-              </span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <OverviewSearchList searches={searches} locationsBySearchId={locationsRecord} />
-          </CardContent>
-        </Card>
+        {stats.map((s) => (
+          <Card key={s.label} className="border-white/10 bg-card/70">
+            <CardHeader>
+              <CardTitle className="text-base text-primary">{s.label}</CardTitle>
+              <CardDescription>{s.hint}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-semibold text-white">{s.value}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
+
+      <Card className="border-white/10 bg-card/70">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base text-primary">Searches</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Sync, preview, and export per saved search —{' '}
+            <Link href="/dashboard/searches" className="text-primary underline-offset-4 hover:underline">
+              full editor on the Searches tab
+            </Link>
+            .
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <OverviewSearchList searches={searches} locationsBySearchId={locationsRecord} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
