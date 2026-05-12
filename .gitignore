@@ -1,0 +1,26 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+apps/web/.next
+apps/web/out
+
+# Env
+.env
+.env*.local
+
+# Supabase
+supabase/.branches
+supabase/.temp
+
+# IDE / OS
+.DS_Store
+.idea
+*.log
+
+# Testing
+coverage
+
+# TypeScript
+*.tsbuildinfo

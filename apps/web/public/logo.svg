@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" fill="none">
+  <defs>
+    <linearGradient id="lpg" x1="0" y1="0" x2="220" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee" />
+      <stop offset="0.55" stop-color="#a855f7" />
+      <stop offset="1" stop-color="#f472b6" />
+    </linearGradient>
+  </defs>
+  <text x="4" y="34" font-family="system-ui, Segoe UI, sans-serif" font-size="28" font-weight="700" fill="url(#lpg)">
+    Lead Phantom
+  </text>
+</svg>
