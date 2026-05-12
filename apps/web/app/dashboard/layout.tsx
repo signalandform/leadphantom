@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation';
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar';
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
 import { isPocMode, POC_USER_ID } from '@/lib/config/app-mode';
-import { pocGetProfile } from '@/lib/mock/poc-store';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 /** Dynamic rendering so POC mock state and Supabase sessions stay fresh. */
@@ -13,11 +12,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const poc = isPocMode();
 
   let userId: string;
-  let onboarded: boolean;
+  let initiallyOnboarded: boolean;
 
   if (poc) {
     userId = POC_USER_ID;
-    onboarded = pocGetProfile().onboarded;
+    initiallyOnboarded = true;
   } else {
     const supabase = await createServerSupabaseClient();
     const {
@@ -36,7 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       .eq('id', user.id)
       .maybeSingle();
 
-    onboarded = profile?.onboarded ?? false;
+    initiallyOnboarded = profile?.onboarded ?? false;
   }
 
   return (
@@ -46,7 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <DashboardShell
           pocMode={poc}
           userId={userId}
-          initiallyOnboarded={onboarded}
+          initiallyOnboarded={initiallyOnboarded}
         >
           <main className="flex-1 p-6 md:p-10">{children}</main>
         </DashboardShell>
